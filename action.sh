@@ -3,9 +3,9 @@ MODDIR=${0%/*}
 umask 077
 
 [ -d /sdcard ] && [ -w /sdcard ] || { printf 'Unlock the phone to access /sdcard.\n'; exit 1; }
-WORK=$(mktemp -d /data/local/tmp/xiaomi17-4k120-debug.XXXXXX) || exit 1
+WORK=$(mktemp -d /data/local/tmp/xiaomi14-4k120-debug.XXXXXX) || exit 1
 SNAPSHOT="$WORK/snapshot"
-OUTPUT="/sdcard/Xiaomi17-4K120-debug-$(date +%Y%m%d-%H%M%S)-$$.zip"
+OUTPUT="/sdcard/Xiaomi14-4K120-debug-$(date +%Y%m%d-%H%M%S)-$$.zip"
 mkdir -p "$SNAPSHOT" || exit 1
 
 capture() {
@@ -99,7 +99,7 @@ make_zip() {
   mv "$OUTPUT.partial" "$OUTPUT" || return 1
 }
 
-printf 'Xiaomi 17 4K120\nCollecting diagnostics...\n'
+printf 'Xiaomi 14 4K120\nCollecting diagnostics...\n'
 printf 'file\texit_status\n' > "$SNAPSHOT/collection-status.tsv"
 {
   date
@@ -132,16 +132,18 @@ capture system/dropbox.txt 60 dumpsys dropbox --print
 capture root/modules.txt 20 sh -c 'for dir in /data/adb/modules/*; do [ -d "$dir" ] || continue; printf "\n%s\n" "$dir"; cat "$dir/module.prop"; for flag in disable remove update; do [ ! -e "$dir/$flag" ] || printf "%s\n" "$flag"; done; done'
 capture system/thermal-sensors.txt 20 sh -c 'for dir in /sys/class/thermal/thermal_zone*; do [ -d "$dir" ] || continue; printf "\n%s\n" "$dir"; cat "$dir/type" "$dir/temp"; done'
 
-for FILE in "$MODDIR/module.prop" "$MODDIR/customize.sh" "$MODDIR/post-fs-data.sh" "$MODDIR/action.sh" "$MODDIR/boot.log" "$MODDIR/boot.previous.log" "$MODDIR/native-settings.txt" "$MODDIR/payload/sensormodule.bin" /system/build.prop /system/system/build.prop /system_ext/build.prop /product/build.prop /vendor/build.prop /odm/build.prop /odm/etc/build.prop /proc/last_kmsg /data/adb/magisk.log /cache/magisk.log /data/adb/ksu/log/ksud.log /data/adb/ksu/logs/ksud.log /sys/fs/pstore/*; do
+for FILE in "$MODDIR/module.prop" "$MODDIR/customize.sh" "$MODDIR/post-fs-data.sh" "$MODDIR/action.sh" "$MODDIR/boot.log" "$MODDIR/boot.previous.log" "$MODDIR/native-settings.txt" "$MODDIR"/payload/*.bin /system/build.prop /system/system/build.prop /system_ext/build.prop /product/build.prop /vendor/build.prop /odm/build.prop /odm/etc/build.prop /proc/last_kmsg /data/adb/magisk.log /cache/magisk.log /data/adb/ksu/log/ksud.log /data/adb/ksu/logs/ksud.log /sys/fs/pstore/*; do
   save "$FILE"
 done
 
-SENSOR=/odm/lib64/camera/com.qti.sensormodule.pudding_sunny_ovx9500_wide_i.bin
 CONFIG=/odm/etc/camera/camxoverridesettings.txt
-capture camera/action-file-hashes.txt 20 sha256sum "$SENSOR" "$CONFIG" "$MODDIR/payload/sensormodule.bin" "$MODDIR/native-settings.txt"
-capture camera/init-file-hashes.txt 20 nsenter -t 1 -m -- sha256sum "$SENSOR" "$CONFIG"
+capture camera/action-file-hashes.txt 20 sha256sum "$CONFIG" "$MODDIR/native-settings.txt" "$MODDIR"/payload/*.bin
 capture camera/init-video-settings.txt 20 nsenter -t 1 -m -- cat "$CONFIG"
-capture camera/init-sensormodule.bin 20 nsenter -t 1 -m -- cat "$SENSOR"
+for NAME in com.qti.sensormodule.houji_sunny_ovx9000_wide.bin com.qti.sensormodule.houji_sunny_ovx9000_wide_ii.bin; do
+  SENSOR="/odm/lib64/camera/$NAME"
+  capture "camera/init-$NAME.sha256" 20 nsenter -t 1 -m -- sha256sum "$SENSOR"
+  capture "camera/init-$NAME" 20 nsenter -t 1 -m -- cat "$SENSOR"
+done
 capture camera/odm-file-list.txt 30 ls -laR /odm/etc/camera /odm/lib64/camera
 capture camera/vendor-file-list.txt 30 ls -laR /vendor/etc/camera /data/vendor/camera /data/vendor/camx
 for DIR in /odm/etc/camera /vendor/etc/camera /data/vendor/camera /data/vendor/camx; do

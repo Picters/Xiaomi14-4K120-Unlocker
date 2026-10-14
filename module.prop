@@ -1,6 +1,6 @@
-id=xiaomi17_4k120_unlocker
-name=Xiaomi 17 4K120
-version=1.0
+id=xiaomi14_4k120_unlocker
+name=Xiaomi 14 4K120
+version=0.1-experimental
 versionCode=1
 author=Picters
-description=Adds support for 4K120fps video recording.
+description=Experimental 4K120 video recording support for Xiaomi 14 (houji), sunny OVX9000.
