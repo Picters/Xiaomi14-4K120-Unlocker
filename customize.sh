@@ -28,7 +28,6 @@ for NAME in com.qti.sensormodule.houji_sunny_ovx9000_wide.bin com.qti.sensormodu
 done
 
 set_perm "$MODPATH/post-fs-data.sh" 0 0 0755
-set_perm "$MODPATH/action.sh" 0 0 0755
 
 ui_print "  4K120 and 1080p120/240 video recording support."
 ui_print "  Ready. Reboot to apply."
