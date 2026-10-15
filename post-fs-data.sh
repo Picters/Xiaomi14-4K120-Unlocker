@@ -59,4 +59,4 @@ for NAME in com.qti.sensormodule.houji_sunny_ovx9000_wide.bin com.qti.sensormodu
   MOUNTED="$SENSOR $MOUNTED"
 done
 nsenter -t 1 -m -- mount --bind "$MODDIR/native-settings.txt" "$CONFIG" || fail "Cannot mount video settings"
-printf 'Applied: experimental 4K120 sensor tables and video settings\n'
+printf 'Applied: 4K120 sensor tables and video settings\n'

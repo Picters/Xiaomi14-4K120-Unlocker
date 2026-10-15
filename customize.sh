@@ -30,7 +30,7 @@ done
 set_perm "$MODPATH/post-fs-data.sh" 0 0 0755
 set_perm "$MODPATH/action.sh" 0 0 0755
 
-ui_print "  Experimental build. 4K120 requires device testing."
+ui_print "  4K120 video recording support."
 ui_print "  Ready. Reboot to apply."
 ui_print ""
 ui_print "  Made by Picters"
