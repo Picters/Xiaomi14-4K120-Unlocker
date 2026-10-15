@@ -1,6 +1,6 @@
 id=xiaomi14_4k120_unlocker
 name=Xiaomi 14 4K120
-version=1.0
-versionCode=2
+version=1.1-test
+versionCode=3
 author=Picters
-description=Adds support for 4K120fps video recording.
+description=Adds support for 4K120 and 1080p120/240 video recording.

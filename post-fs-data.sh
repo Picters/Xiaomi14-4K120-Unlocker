@@ -38,16 +38,24 @@ for NAME in com.qti.sensormodule.houji_sunny_ovx9000_wide.bin com.qti.sensormodu
 done
 
 awk '
+  function add_modes(line,    modes, count, i) {
+    count = split("0@8@120 0@6@120 0@6@240", modes, " ")
+    sub(/\r$/, "", line)
+    sub(/[[:space:]]*$/, "", line)
+    for (i = 1; i <= count; i++) {
+      if (line !~ ("[=|]" modes[i] "([|[:space:]]|$)")) {
+        if (line ~ /=[[:space:]]*$/) line = line modes[i]
+        else line = line "|" modes[i]
+      }
+    }
+    return line
+  }
   /^[[:space:]]*VideoSizeCustom[[:space:]]*=/ {
     found = 1
-    sub(/\r$/, "")
-    if ($0 !~ /[=|]0@8@120([|[:space:]]|$)/) {
-      sub(/[[:space:]]*$/, "")
-      $0 = $0 "|0@8@120"
-    }
+    $0 = add_modes($0)
   }
   { print }
-  END { if (!found) print "VideoSizeCustom=0@8@120" }
+  END { if (!found) print add_modes("VideoSizeCustom=") }
 ' "$CONFIG" > "$MODDIR/native-settings.tmp" || { rm -f "$MODDIR/native-settings.tmp"; fail "Cannot generate video settings"; }
 mv -f "$MODDIR/native-settings.tmp" "$MODDIR/native-settings.txt" || fail "Cannot save video settings"
 chmod 0644 "$MODDIR/native-settings.txt" || fail "Cannot set settings permissions"
@@ -59,4 +67,4 @@ for NAME in com.qti.sensormodule.houji_sunny_ovx9000_wide.bin com.qti.sensormodu
   MOUNTED="$SENSOR $MOUNTED"
 done
 nsenter -t 1 -m -- mount --bind "$MODDIR/native-settings.txt" "$CONFIG" || fail "Cannot mount video settings"
-printf 'Applied: 4K120 sensor tables and video settings\n'
+printf 'Applied: 4K120 and 1080p120/240 video settings\n'
