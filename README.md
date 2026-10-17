@@ -4,9 +4,7 @@
 
 KernelSU / Magisk module.
 
-Adds 4K120 and 1080p120/240 video recording to the stock Xiaomi 14 camera. Compatible with houji and the supported sunny OVX9000 wide / wide_ii sensor tables.
-
-4K120 tested on Android 16. 1080p120/240 awaiting device testing.
+Adds 4K120 video recording to the stock Xiaomi 14 camera. Compatible with houji and the supported sunny OVX9000 wide / wide_ii sensor tables.
 
 ## Install
 
